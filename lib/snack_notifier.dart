@@ -63,7 +63,7 @@ class SnackNotifier extends StateNotifier<SnackState> {
 
     state = newState;
   }
-
+//haha
 // ich habe eine liste von Münzen in meinem einwurf
 // ich habe einen int wert als preis von meinem produkt
 // ich muss also den int wert zu einer liste von münzen umwandeln
