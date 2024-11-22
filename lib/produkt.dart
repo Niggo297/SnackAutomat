@@ -9,14 +9,14 @@ class Produkt {
     ),
     Produkt(
       name: 'Mars',
-      preis: 130,
+      preis: 100,
       id: 2,
       verfuegbareProdukte: 5,
       bild: 'assets/images/capriSun.jpg',
     ),
     Produkt(
       name: 'Fanta zero',
-      preis: 250,
+      preis: 450,
       id: 3,
       verfuegbareProdukte: 2,
       bild: 'assets/images/skittles.jpg',

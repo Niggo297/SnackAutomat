@@ -96,11 +96,14 @@ class SnackNotifier extends StateNotifier<SnackState> {
     List<Muenze> preisDesProduktesAlsListeVonMuenzen = [];
     for (int i = 0; i <= muenzenDieEsGibt.length - 1; i++) {
       if (preisProdukt == 0) {
+        print("ist null");
         break;
       }
-      if (muenzenDieEsGibt[i].wert < preisProdukt) {
+      if (muenzenDieEsGibt[i].wert <= preisProdukt) {
         preisDesProduktesAlsListeVonMuenzen.add(muenzenDieEsGibt[i]);
         preisProdukt -= muenzenDieEsGibt[i].wert;
+        print("ist kleiner");
+        print(preisDesProduktesAlsListeVonMuenzen.toString());
         i = 0;
       } else if (muenzenDieEsGibt[i].wert > preisProdukt) {
         continue;
