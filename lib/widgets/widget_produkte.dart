@@ -52,46 +52,54 @@ class ProduktUI extends ConsumerWidget {
         border: Border.all(width: 2),
         color: const Color.fromARGB(181, 0, 0, 0),
       ),
-      height: 380,
-      width: 700,
-      child: GridView.builder(
-        itemCount: snackState.produkte.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Anzahl der Spalten
-          crossAxisSpacing: 1.0, // Abstand zwischen den Spalten
-          mainAxisSpacing: 120, // Abstand zwischen den Reihen
-          childAspectRatio: 1, // Verhältnis von Breite zu Höhe der Elemente
+      height: 680,
+      width: 1400,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: GridView.builder(
+          itemCount: snackState.produkte.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3, // Anzahl der Spalten
+            crossAxisSpacing: 40, // Abstand zwischen den Spalten
+            mainAxisSpacing: 40, // Abstand zwischen den Reihen
+            // childAspectRatio: 1, // Verhältnis von Breite zu Höhe der Elemente
+            mainAxisExtent: 380,
+          ),
+          itemBuilder: (context, index) {
+            final p = snackState.produkte[index];
+            return InkWell(
+              onTap: () => snackState.gewaehltesProdukt?.id == p.id
+                  ? snackNotifier.produktWaehlen(null)
+                  : snackNotifier.produktWaehlen(p),
+              child: Container(
+                  padding: const EdgeInsets.all(10),
+                  height: 320,
+                  width: 360,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: 5),
+                        Text(p.name),
+                        Image.asset(
+                          p.bild,
+                          height: 200,
+                          // width: 240,
+                          fit: BoxFit.contain,
+                        ),
+                        Text("${p.preis} Cent"),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green),
+                            onPressed: () => snackNotifier.kaufen(),
+                            child: const Text("Produkt kaufen")),
+                        SizedBox(height: 5),
+                      ])),
+            );
+          },
         ),
-        itemBuilder: (context, index) {
-          final p = snackState.produkte[index];
-          return InkWell(
-            onTap: () => snackState.gewaehltesProdukt?.id == p.id
-                ? snackNotifier.produktWaehlen(null)
-                : snackNotifier.produktWaehlen(p),
-            child: Column(
-              children: [
-                Container(
-                    height: 300,
-                    width: 250,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Column(children: [
-                      Text(p.name),
-                      Image.asset(
-                        p.bild,
-                        // height: 80,
-                        // width: 240,
-                        fit: BoxFit.contain,
-                      ),
-                      Text("${p.preis} Cent"),
-                      ElevatedButton(
-                          onPressed: () {}, child: const Text("Produkt kaufen")),
-                    ])),
-              ],
-            ),
-          );
-        },
       ),
     );
   }

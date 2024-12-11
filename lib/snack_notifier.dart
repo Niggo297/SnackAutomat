@@ -13,7 +13,6 @@ class SnackNotifier extends StateNotifier<SnackState> {
 
   Portemonnaie get getKundenSpeicher => state.kundenSpeicher;
 
-  //ohne Verlust
   void zumKundenHinzufuegen(Muenze muenze) {
     final vorher = state.kundenSpeicher.muenzen;
     final nachher = [...vorher, muenze];
@@ -51,7 +50,6 @@ class SnackNotifier extends StateNotifier<SnackState> {
     state = newState;
   }
 
-// kann hieraus meine kaufen funktion herleiten
   void abbrechen() {
     List<Muenze> neueMuenzen =
         state.einwurf.muenzen + state.kundenSpeicher.muenzen;
@@ -63,27 +61,9 @@ class SnackNotifier extends StateNotifier<SnackState> {
 
     state = newState;
   }
-//haha
-// ich habe eine liste von Münzen in meinem einwurf
-// ich habe einen int wert als preis von meinem produkt
-// ich muss also den int wert zu einer liste von münzen umwandeln
-// und dann die liste von münzen mit der liste von münzen in meinem einwurf vergleichen
-// also ob der eiwnurf für den preis des produkts reicht
-// wenn ja dann soll das produkt gekauft werden
-// eine liste von münzen des preises gelangt in den Automaten
-// das gekaufte produkt wird als gekauftes produkt ausgegeben
-// und der restbetrag der übrig bleibt gelangt wieder in kundenspeicher gelegt
-
-// also es könnte sowas sein wie
-// gehe durch die liste aller münzen die es gibt und vergleiche
-// ob der einzelne wert der münzen in den preis der produktes passt
-// wenn ja dann füge die münze in eine liste von münzen hinzu
-// und ziehe den wert der münze vom preis des produktes ab
-// wenn nein dann gehe zur nächsten münze
-// wenn die liste von münzen den preis des produktes entspricht dann breche die schleife ab
 
   void kaufen() {
-    print("hha");
+    // print("hha");
     const List<Muenze> muenzenDieEsGibt = [
       Muenze(200),
       Muenze(100),
@@ -92,26 +72,87 @@ class SnackNotifier extends StateNotifier<SnackState> {
       Muenze(10),
       Muenze(5),
     ];
-    int preisProdukt = state.gewaehltesProdukt!.preis;
-    List<Muenze> preisDesProduktesAlsListeVonMuenzen = [];
-    for (int i = 0; i <= muenzenDieEsGibt.length - 1; i++) {
-      if (preisProdukt == 0) {
-        break;
+    if (state.gewaehltesProdukt != null) {
+      int preisProdukt = state.gewaehltesProdukt!.preis;
+      List<Muenze> preisDesProduktesAlsListeVonMuenzen = [];
+      if (state.betragEinwurf < preisProdukt) {
+        print("nicht genug geld");
       }
-      if (muenzenDieEsGibt[i].wert < preisProdukt) {
-        preisDesProduktesAlsListeVonMuenzen.add(muenzenDieEsGibt[i]);
-        preisProdukt -= muenzenDieEsGibt[i].wert;
-        i = 0;
-      } else if (muenzenDieEsGibt[i].wert > preisProdukt) {
-        continue;
+      if (state.betragEinwurf == preisProdukt) {
+        for (int i = 0; i <= muenzenDieEsGibt.length - 1; i++) {
+          if (muenzenDieEsGibt[i].wert <= preisProdukt) {
+            preisDesProduktesAlsListeVonMuenzen.add(muenzenDieEsGibt[i]);
+            preisProdukt -= muenzenDieEsGibt[i].wert;
+            print("komme ich in diese zeile");
+            print(muenzenDieEsGibt[i].wert);
+            print(preisProdukt);
+
+            i = 0;
+          } else if (muenzenDieEsGibt[i].wert > preisProdukt) {
+            print("komme ich hier rein");
+            continue;
+          }
+          print(preisDesProduktesAlsListeVonMuenzen);
+          if (preisProdukt == 0) {
+            final newState = state.copyWith(
+              einwurf: () => const Portemonnaie(),
+              gekauftesProdukt: () => state.gewaehltesProdukt,
+              gewaehltesProdukt: () => Produkt(),
+              muenzspeicher: () => Portemonnaie(
+                state.muenzspeicher.muenzen +
+                    preisDesProduktesAlsListeVonMuenzen,
+              ),
+            );
+
+            state = newState;
+          }
+        }
+      }
+
+      if (state.betragEinwurf > preisProdukt) {
+        {
+          int restbetrag = state.betragEinwurf - preisProdukt;
+          List<Muenze> betragVomRueckgeld = [];
+          List<Muenze> muenzspeicher = state.muenzspeicher.muenzen.toList();
+          muenzspeicher.sort((a, b) => b.wert.compareTo(a.wert));
+
+          for (int i = 0; i < muenzspeicher.length; i++) {
+            if (muenzspeicher[i].wert <= restbetrag) {
+              betragVomRueckgeld.add(muenzspeicher[i]);
+              restbetrag -= muenzspeicher[i].wert;
+              muenzspeicher.removeAt(i);
+              i = 0;
+            } else if (muenzspeicher[i].wert > restbetrag) {
+              continue;
+            }
+            print("muenzen: $muenzspeicher");
+            if (restbetrag == 0) {
+              betragVomRueckgeld = [
+                ...state.kundenSpeicher.muenzen,
+                ...betragVomRueckgeld,
+              ];
+              final newState = state.copyWith(
+                einwurf: () => const Portemonnaie(),
+                gekauftesProdukt: () => state.gewaehltesProdukt,
+                gewaehltesProdukt: () => Produkt(),
+                kundenSpeicher: () => Portemonnaie(
+                  betragVomRueckgeld,
+                ),
+                muenzspeicher: () => Portemonnaie(muenzspeicher),
+              );
+              state = newState;
+            }
+          }
+        }
       }
     }
-    if (preisProdukt == 0) {
-      final newState = state.copyWith(
-        einwurf: () => const Portemonnaie(),
-      );
-      state = newState;
-    }
+  }
+
+  void produktEntnehmen() {
+    final newState = state.copyWith(
+      gekauftesProdukt: () => null,
+    );
+    state = newState;
   }
 
   void produktWaehlen(Produkt? produkt) {
@@ -120,16 +161,6 @@ class SnackNotifier extends StateNotifier<SnackState> {
     );
     state = newState;
   }
-
-  /* 
-  der eiwnurf ist eine liste von münzen 
-  und ich habe einen preis von dem produkt
-  ich muss die Münzen mit dem preis vergleichen
-  also muss ich eine schleife durch den preis gehen und den preis
-  in verschiedene münzen auflösen 
-  also 120 wird z.b zu 1 euro und 20 cent münze 
-  
-    */
 
 // for (p in  )
 
@@ -146,4 +177,29 @@ class SnackNotifier extends StateNotifier<SnackState> {
 //     state = newState;
 //   }
 // }
+
+  void einwurfLeeren() {
+    final newState = state.copyWith(
+      einwurf: () => const Portemonnaie(),
+    );
+    state = newState;
+  }
+
+  void muenzspeicherLeeren() {
+    final newState = state.copyWith(
+      muenzspeicher: () => const Portemonnaie(),
+    );
+    state = newState;
+  }
+
+  void adminMuenzeHinzufuegen(Muenze muenze) {
+    final vorherMuenzspeicher = state.muenzspeicher.muenzen;
+    final nachherMuenzspeicher = [...vorherMuenzspeicher, muenze];
+
+    final newState = state.copyWith(
+      muenzspeicher: () => Portemonnaie(nachherMuenzspeicher),
+    );
+
+    state = newState;
+  }
 }

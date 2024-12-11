@@ -1,9 +1,12 @@
+import 'package:snackautomat_31_10/muenze.dart';
+
 import 'produkt.dart';
 import 'portemonnaie.dart';
 
 class SnackState {
   List<Produkt> produkte;
   Produkt? gewaehltesProdukt;
+  Produkt? gekauftesProdukt;
   Portemonnaie einwurf;
   Portemonnaie muenzspeicher;
   Portemonnaie kundenSpeicher;
@@ -18,8 +21,24 @@ class SnackState {
   // beispiel Portemonnaie getKundenSpeicher(){ return kundenSpeicher}
 
   SnackState({
+    this.gekauftesProdukt,
     this.einwurf = const Portemonnaie(),
-    this.muenzspeicher = const Portemonnaie(),
+    this.muenzspeicher = const Portemonnaie(
+      [
+        Muenze(5),
+        Muenze(5),
+        Muenze(10),
+        Muenze(10),
+        Muenze(10),
+        Muenze(20),
+        Muenze(20),
+        Muenze(50),
+        Muenze(50),
+        Muenze(100),
+        Muenze(100),
+        Muenze(200),
+      ],
+    ),
     this.produkte = const [],
     this.gewaehltesProdukt,
     this.kundenSpeicher = const Portemonnaie([
@@ -44,6 +63,7 @@ class SnackState {
     Portemonnaie Function()? muenzspeicher,
     Produkt? Function()? gewaehltesProdukt,
     Portemonnaie Function()? kundenSpeicher,
+    Produkt? Function()? gekauftesProdukt,
   }) =>
       SnackState(
         produkte: produkte != null ? produkte() : this.produkte,
@@ -53,6 +73,9 @@ class SnackState {
         gewaehltesProdukt: gewaehltesProdukt != null
             ? gewaehltesProdukt()
             : this.gewaehltesProdukt,
+        gekauftesProdukt: gekauftesProdukt != null
+            ? gekauftesProdukt()
+            : this.gekauftesProdukt,
         kundenSpeicher:
             kundenSpeicher != null ? kundenSpeicher() : this.kundenSpeicher,
       );
