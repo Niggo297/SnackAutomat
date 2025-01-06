@@ -93,7 +93,7 @@ class ProduktUI extends ConsumerWidget {
                         ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green),
-                            onPressed: () => snackNotifier.kaufen(),
+                            onPressed: () => snackNotifier.kaufen(context),
                             child: const Text("Produkt kaufen")),
                         SizedBox(height: 5),
                       ])),

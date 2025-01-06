@@ -63,7 +63,7 @@ class Bank extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
-                "Münzen die du dir selber zu deinem Portemonnaie hinzufügen kannst du reicher Schnösel"),
+                "Münzen die du dir selber zu deinem Portemonnaie hinzufügen kannst "),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(

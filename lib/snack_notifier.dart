@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:snackautomat_31_10/muenze.dart';
 import 'package:snackautomat_31_10/portemonnaie.dart';
 import 'package:snackautomat_31_10/produkt.dart';
@@ -62,8 +63,7 @@ class SnackNotifier extends StateNotifier<SnackState> {
     state = newState;
   }
 
-  void kaufen() {
-    // print("hha");
+  void kaufen(BuildContext context) {
     const List<Muenze> muenzenDieEsGibt = [
       Muenze(200),
       Muenze(100),
@@ -76,6 +76,25 @@ class SnackNotifier extends StateNotifier<SnackState> {
       int preisProdukt = state.gewaehltesProdukt!.preis;
       List<Muenze> preisDesProduktesAlsListeVonMuenzen = [];
       if (state.betragEinwurf < preisProdukt) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Nicht genug Geld"),
+              content: Text(
+                  "Der eingeworfene Betrag reicht nicht aus, um das Produkt zu kaufen. "
+                  "Bitte werfen Sie mehr Geld ein."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Schließt den Dialog
+                  },
+                  child: Text("OK"),
+                ),
+              ],
+            );
+          },
+        );
         print("nicht genug geld");
       }
       if (state.betragEinwurf == preisProdukt) {
@@ -83,13 +102,12 @@ class SnackNotifier extends StateNotifier<SnackState> {
           if (muenzenDieEsGibt[i].wert <= preisProdukt) {
             preisDesProduktesAlsListeVonMuenzen.add(muenzenDieEsGibt[i]);
             preisProdukt -= muenzenDieEsGibt[i].wert;
-            print("komme ich in diese zeile");
+
             print(muenzenDieEsGibt[i].wert);
             print(preisProdukt);
 
             i = 0;
           } else if (muenzenDieEsGibt[i].wert > preisProdukt) {
-            print("komme ich hier rein");
             continue;
           }
           print(preisDesProduktesAlsListeVonMuenzen);
@@ -161,22 +179,6 @@ class SnackNotifier extends StateNotifier<SnackState> {
     );
     state = newState;
   }
-
-// for (p in  )
-
-  // if (state.betragEinwurf >= state.gewaehltesProdukt!.preis) {
-  //   final neuerBetrag = state.betragEinwurf - state.gewaehltesProdukt!.preis;
-
-  // final newState =
-  //     state.copyWith(state.betragEinwurf: () => const Portemonnaie(neuerBetrag));
-
-//   void produktWaehlen(Produkt? produkt) {
-//     final newState = state.copyWith(
-//       gewaehltesProdukt: () => produkt,
-//     );
-//     state = newState;
-//   }
-// }
 
   void einwurfLeeren() {
     final newState = state.copyWith(
