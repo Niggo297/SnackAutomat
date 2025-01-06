@@ -64,6 +64,9 @@ class SnackNotifier extends StateNotifier<SnackState> {
   }
 
   void kaufen(BuildContext context) {
+    int preisProdukt = state.gewaehltesProdukt!.preis;
+    int restbetrag = state.betragEinwurf - preisProdukt;
+
     const List<Muenze> muenzenDieEsGibt = [
       Muenze(200),
       Muenze(100),
@@ -87,7 +90,7 @@ class SnackNotifier extends StateNotifier<SnackState> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Schließt den Dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text("OK"),
                 ),
@@ -131,24 +134,29 @@ class SnackNotifier extends StateNotifier<SnackState> {
         {
           int restbetrag = state.betragEinwurf - preisProdukt;
           List<Muenze> betragVomRueckgeld = [];
-          List<Muenze> muenzspeicher = state.muenzspeicher.muenzen.toList();
-          muenzspeicher.sort((a, b) => b.wert.compareTo(a.wert));
+          List<Muenze> muenzspeicherUndEinwurf = [
+            ...state.muenzspeicher.muenzen,
+            ...state.einwurf.muenzen,
+          ];
+          // List<Muenze> muenzspeicher = state.muenzspeicher.muenzen.toList();
+          muenzspeicherUndEinwurf.sort((a, b) => b.wert.compareTo(a.wert));
 
-          for (int i = 0; i < muenzspeicher.length; i++) {
-            if (muenzspeicher[i].wert <= restbetrag) {
-              betragVomRueckgeld.add(muenzspeicher[i]);
-              restbetrag -= muenzspeicher[i].wert;
-              muenzspeicher.removeAt(i);
+          for (int i = 0; i < muenzspeicherUndEinwurf.length; i++) {
+            if (muenzspeicherUndEinwurf[i].wert <= restbetrag) {
+              betragVomRueckgeld.add(muenzspeicherUndEinwurf[i]);
+              restbetrag -= muenzspeicherUndEinwurf[i].wert;
+              muenzspeicherUndEinwurf.removeAt(i);
               i = 0;
-            } else if (muenzspeicher[i].wert > restbetrag) {
+            } else if (muenzspeicherUndEinwurf[i].wert > restbetrag) {
               continue;
             }
-            print("muenzen: $muenzspeicher");
+            print("muenzen: $muenzspeicherUndEinwurf");
             if (restbetrag == 0) {
               betragVomRueckgeld = [
                 ...state.kundenSpeicher.muenzen,
                 ...betragVomRueckgeld,
               ];
+
               final newState = state.copyWith(
                 einwurf: () => const Portemonnaie(),
                 gekauftesProdukt: () => state.gewaehltesProdukt,
@@ -156,10 +164,32 @@ class SnackNotifier extends StateNotifier<SnackState> {
                 kundenSpeicher: () => Portemonnaie(
                   betragVomRueckgeld,
                 ),
-                muenzspeicher: () => Portemonnaie(muenzspeicher),
+                muenzspeicher: () => Portemonnaie(
+                  muenzspeicherUndEinwurf,
+                ),
               );
               state = newState;
             }
+          }
+          if (restbetrag > 0) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Rückgeld auszahlen nicht möglich"),
+                  content: Text(
+                      "Bitte brechen Sie die Transaktion ab und werfen Sie das Geld passend ein."),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("OK"),
+                    ),
+                  ],
+                );
+              },
+            );
           }
         }
       }

@@ -75,14 +75,21 @@ class ProduktUI extends ConsumerWidget {
                   padding: const EdgeInsets.all(10),
                   height: 320,
                   width: 360,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: snackState.gewaehltesProdukt?.id == p.id
+                            ? Colors.green
+                            : Colors.black,
+                        width: 10,
+                      )),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(height: 5),
-                        Text(p.name),
+                        Text(p.name,
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
                         Image.asset(
                           p.bild,
                           height: 200,

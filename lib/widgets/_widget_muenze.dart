@@ -32,3 +32,6 @@ class MuenezUI extends ConsumerWidget {
     );
   }
 }
+
+
+// widget für die Münzen der "Bank"

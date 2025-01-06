@@ -37,3 +37,6 @@ class MuenezUI extends ConsumerWidget {
     );
   }
 }
+
+
+// widget für die Münzen des Kunden
